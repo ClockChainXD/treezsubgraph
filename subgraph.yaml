@@ -1,0 +1,38 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: striteNFT
+    network: fuji
+    source:
+      address: "0x028ee45f92D1f93A5dbd3F346A03df2B788f3e46"
+      abi: striteNFT
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.2
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - ItemCreated
+        - OwnershipTransferred
+        - SaleStatusChanged
+        - Transfer
+      abis:
+        - name: striteNFT
+          file: ./abis/striteNFT.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: ItemCreated(indexed address,uint256)
+          handler: handleItemCreated
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: SaleStatusChanged(bool)
+          handler: handleSaleStatusChanged
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
