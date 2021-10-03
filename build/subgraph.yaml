@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: avaxTreezNft
@@ -22,7 +22,7 @@ dataSources:
         - Transfer
       abis:
         - name: avaxTreezNft
-          file: ./abis/avaxTreezNft.json
+          file: avaxTreezNft\abis\avaxTreezNft.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,indexed uint256)
           handler: handleApproval
@@ -36,7 +36,7 @@ dataSources:
           handler: handleSaleStatusChanged
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mapping.ts
+      file: avaxTreezNft\avaxTreezNft.wasm
   - kind: ethereum/contract
     name: avaxTreezNftMarket
     network: fuji
@@ -57,7 +57,7 @@ dataSources:
         - Transfer
       abis:
         - name: avaxTreezNftMarket
-          file: ./abis/avaxTreezNftMarket.json
+          file: avaxTreezNftMarket\abis\avaxTreezNftMarket.json
       eventHandlers:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
@@ -67,5 +67,4 @@ dataSources:
           handler: handleBidAdded
         - event: itemSold(address,address,uint256,uint256)
           handler: handleItemSold
-      file: ./src/mapping.ts
-
+      file: avaxTreezNft\avaxTreezNft.wasm
