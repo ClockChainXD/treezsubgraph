@@ -152,17 +152,15 @@ user= new User(event.params.creator.toHex())
 user.address=event.params.creator
 }
 
-user.save()  
 
 
   let nft= new Nft(event.params.tokenId.toString())
 let contract= avaxTreezNft.bind(event.address)
-let baseUri=contract.baseUri()
   nft.owner=event.params.creator.toHex()
   nft.creator=event.params.creator.toHex()
   nft.token_id=event.params.tokenId
-  let tokenUri=baseUri+event.params.tokenId.toString()+".json"
-  nft.token_uri=tokenUri
+ nft.token_uri=contract.tokenURI(event.params.tokenId)
+
   // let cid=tokenUri.split("ipfs://")
 /*   let realCid=cid[1]
 
@@ -203,11 +201,10 @@ if(tokenIpfs){
   
 
     nft.save()
-  let user2= User.load(event.params.creator.toHex())
-let usernfts=user2.nfts
+let usernfts=user.nfts
 usernfts.push(event.params.tokenId.toString())
-user2.nfts=usernfts
-user2.save()
+user.nfts=usernfts
+user.save()
 
 
 
@@ -261,7 +258,7 @@ export function handleItemAddedToSales(event: itemAddedToSales): void {
   }
   itemsOnSale.owner=event.params.seller.toHex()
   itemsOnSale.tokenID=entity.token_id
-  itemsOnSale.tokenAddress=Address.fromString("0x028ee45f92D1f93A5dbd3F346A03df2B788f3e46")
+  itemsOnSale.tokenAddress=Address.fromString("0x0f720D665D55837baDF21a80721d0b8bb6A81b4F")
   itemsOnSale.askingPrice=event.params.askingPrice
   itemsOnSale.acceptedPaymentMethod=Address.fromString("0x0000000000000000000000000000000000000000")
   itemsOnSale.isSold=false
