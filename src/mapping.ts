@@ -1,4 +1,4 @@
-import { Address, BigInt, ipfs, json, JSONValue, JSONValueKind, Value } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value, Wrapped } from "@graphprotocol/graph-ts"
 import {
   avaxTreezNft,
   Approval,
@@ -72,7 +72,11 @@ export function handleApproval(event: Approval): void {
   // - contract.tokenCreator(...)
 }
 
-export function handleApprovalForAll(event: ApprovalForAll): void {}
+export function handleApprovalForAll(event: ApprovalForAll): void {
+
+
+
+}
 /* export function processAvaxTreezMetadata(value: JSONValue, userData: Value): void {
   const protonNftId = userData.toString();
   const avaxTreezMetadata = value.toObject();
@@ -147,43 +151,93 @@ export function handleItemCreated(event: ItemCreated): void {
 
 
     let user= User.load(event.params.creator.toHex())
-if(user==null){
+if(user===null){
 user= new User(event.params.creator.toHex())
 user.address=event.params.creator
 }
 
 
-
-  let nft= new Nft(event.params.tokenId.toString())
+  let nft=  Nft.load(event.params.tokenId.toString())
+  if(nft===null){
+    nft= new Nft(event.params.tokenId.toString())
+  }
+  
 let contract= avaxTreezNft.bind(event.address)
   nft.owner=event.params.creator.toHex()
   nft.creator=event.params.creator.toHex()
   nft.token_id=event.params.tokenId
- nft.token_uri=contract.tokenURI(event.params.tokenId)
-
-  // let cid=tokenUri.split("ipfs://")
-/*   let realCid=cid[1]
-
-
- let tokenIpfs= parseJsonFromIpfs(realCid)
+ let tokenUri=contract.tokenURI(event.params.tokenId)
+nft.token_uri= tokenUri
+   let cid=tokenUri.split("ipfs://")
+  let realCid=cid[1]
 
 
- 
+ const jsonman= parseJsonFromIpfs(realCid)
 
 
-if(tokenIpfs){
- 
-  let nftTraits=nft.attributes
-  nftTraits.push(tokenIpfs)
- */
-    /* 
+
+  
+
+
+if(jsonman){
+
+  if(!jsonman.inner.isNull())
+{
+
+  const tokenIpfs=jsonman.inner
+  let nftName=tokenIpfs.toObject().get('name')
+  if(nftName){
+let attributesof= nftName.toString()
+  log.warning("This tokenIpfsPassedNullCond wtf: {}",[attributesof])
+  nft.name=attributesof
+
+    
         
-         let nftTraits=nft.attributes
-       
-       
-       let attributesJson = tokenData['attributes']
-       
-       attributesJson.forEach(element => {
+      let nftTraits=new Array<string>()
+       let metadata= tokenIpfs.toObject()
+       let attributes= metadata.get('attributes').isNull ? '' :  metadata.get('attributes').toString()
+       if(attributes.length>1)
+       log.warning("This metadata wtf: {}",[attributes])
+       let attributesArray = metadata.get('attributes')
+       if(metadata && attributesArray){
+        let attributesJson = attributesArray.toArray()
+       for (let i = 0; i < attributesJson.length; i++) {
+         if(!attributesJson[i].isNull() ){
+        const attrMap =attributesJson[i].toObject();
+        if (attrMap && attrMap.isSet('trait_type')) {
+          let attrName = attrMap.get('trait_type')
+          let attrValue = attrMap.get('value')
+          if(attrName && attrValue){
+
+          
+          let trait=Trait.load(attrName.toString())
+          if(!trait){
+            trait=new Trait(attrName.toString())
+            trait.name=attrName.toString() 
+          trait.save()
+          }
+  
+          let attribute= new Attribute(event.params.tokenId.toString()+attrName.toString())
+
+
+          attribute.trait_type=attrName.toString()
+          attribute.value=attrValue.toString()
+          attribute.save()
+          nftTraits.push(attribute.id)
+
+        }
+
+        } 
+      }
+      }
+      nft.attributes=nftTraits 
+      log.warning("This works bro wtf: {}",nftTraits)
+    }
+
+   }
+  }
+          /* attributesJson.forEach(element => {
+         let attr=element.toObject()
         let attribute= new Attribute(event.params.tokenId.toString()+element['trait_type'])
         let trait=new Trait(element['trait_type'])
         trait.name=element['trait_type']
@@ -194,18 +248,22 @@ if(tokenIpfs){
         attribute.save()
         nftTraits.push(attribute.id)
        }); */
- /*      nft.attributes=nftTraits
-       nft.save() */
-  // }
+
 
   
+  
+ //}
+ //}
+
+
+}
 
     nft.save()
-let usernfts=user.nfts
-usernfts.push(event.params.tokenId.toString())
-user.nfts=usernfts
-user.save()
+  
+    user.save()
 
+
+  
 
 
 
@@ -217,12 +275,13 @@ export function handleSaleStatusChanged(event: SaleStatusChanged): void {}
 
 export function handleTransfer(event: Transfer): void {
   let user= User.load(event.params.to.toHex())
-  if(user==null){
+  if(user===null){
   user= new User(event.params.to.toHex())
   user.address=event.params.to
+
   }
   
-  user.save()  
+    
 
   let nft= Nft.load(event.params.tokenId.toString())
   if(nft){
@@ -230,12 +289,8 @@ export function handleTransfer(event: Transfer): void {
     nft.owner=event.params.to.toHex()
     nft.save()
   }
-  let user2= User.load(event.params.to.toHex())
-let usernfts=user2.nfts
-usernfts.push(event.params.tokenId.toString())
-user2.nfts=usernfts
-user2.save()
-
+  user.save()
+  
   
 
 
@@ -247,17 +302,21 @@ export function handleItemAddedToSales(event: itemAddedToSales): void {
    let itemOnSale= contract.itemsForSale(event.params.saleID)
    let user= User.load(event.params.seller.toHex())
    
+  if(itemOnSale){
+    let token=itemOnSale.value2
+    if(token){
+    let entity = Nft.load(token.toString())    
 
-  let entity = Nft.load(itemOnSale.value2.toString())    
- 
+  
   let itemsOnSale= ItemsForSale.load(event.params.saleID.toString())
-  if(itemsOnSale==null){
+  if(itemsOnSale===null){
     itemsOnSale= new ItemsForSale(event.params.saleID.toString())
    
  
   }
+  if(entity){
   itemsOnSale.owner=event.params.seller.toHex()
-  itemsOnSale.tokenID=entity.token_id
+  itemsOnSale.tokenID=entity.id
   itemsOnSale.tokenAddress=Address.fromString("0x0f720D665D55837baDF21a80721d0b8bb6A81b4F")
   itemsOnSale.askingPrice=event.params.askingPrice
   itemsOnSale.acceptedPaymentMethod=Address.fromString("0x0000000000000000000000000000000000000000")
@@ -270,6 +329,9 @@ export function handleItemAddedToSales(event: itemAddedToSales): void {
   entity.save()
   
   }
+}
+}
+}
   export function handleBidAddedToSale(event: bidAddedToSale): void {
 
   }
@@ -278,14 +340,17 @@ export function handleItemAddedToSales(event: itemAddedToSales): void {
   export function handleItemSold(event: itemSold): void {
 
     let itemsOnSale= ItemsForSale.load(event.params.saleID.toString())
+    if(itemsOnSale){
     itemsOnSale.isSold=true
     itemsOnSale.owner=event.params.buyer.toHex()
     itemsOnSale.save()
 
     let nft= Nft.load(itemsOnSale.tokenID.toString())
+    if(nft){
     nft.sale_status=false
     nft.owner=event.params.buyer.toHex()
     nft.save()
-
+    }
+    }
 
   }

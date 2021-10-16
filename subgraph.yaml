@@ -4,14 +4,14 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: avaxTreezNft
-    network: fuji
+    network: avalanche
     source:
-      address: "0x0f720D665D55837baDF21a80721d0b8bb6A81b4F"
+      address: "0x51fCc9Dca961446C9d87ac9bb3Ee7EE2b548c62F"
       abi: avaxTreezNft
-      startBlock: 1800000
+      startBlock: 5171734
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Approval
@@ -39,14 +39,14 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: avaxTreezNftMarket
-    network: fuji
+    network: avalanche
     source:
       address: "0x8E070e66d6e35aa8F46feA275E9D4b1D0875A0ce"
       abi: avaxTreezNftMarket
-      startBlock: 1800000
+      startBlock: 5171734
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Approval

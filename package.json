@@ -12,8 +12,9 @@
     "deploy-legacy": "graph deploy --product hosted-service ClockChainXD/Treeznft"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.21.1",
-    "@graphprotocol/graph-ts": "0.20.0",
+    "@graphprotocol/graph-cli": "^0.22.3",
+    "@graphprotocol/graph-ts": "^0.22.1",
+    "global": "^4.4.0",
     "json-as": "^0.2.0"
   }
 }

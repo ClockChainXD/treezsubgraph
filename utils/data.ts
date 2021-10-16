@@ -20,21 +20,24 @@ export function parseJsonFromIpfs(jsonUri: string): Wrapped<JSONValue> | null {
   const ipfsHash = jsonUri
 
   if (ipfsHash.length < 1) {
-    log.info('NO IPFS HASH FOUND WITH URI {}', [jsonUri]);
+    log.warning('NO IPFS HASH FOUND WITH URI {}', [jsonUri]);
     return null;
   }
 
   let data = ipfs.cat(ipfsHash);
   if (!data || (data as Bytes).length < 1) {
-    log.info('JSON DATA FROM IPFS IS EMPTY {}', [ipfsHash]);
+    log.warning('JSON DATA FROM IPFS IS EMPTY {}', [ipfsHash]);
     return null;
   }
 
   const jsonData = json.fromBytes(data as Bytes);
   if (jsonData.isNull()) {
-    log.info('JSON DATA FROM IPFS IS NULL {}', [ipfsHash]);
+    log.warning('JSON DATA FROM IPFS IS NULL {}', [ipfsHash]);
     return null;
   }
-
+  const jsonName=jsonData.toObject().get('name')
+  if(jsonName)
+  log.warning("show me json name!  : {}", [jsonName.toString()])
+  
   return new Wrapped(jsonData);
 };

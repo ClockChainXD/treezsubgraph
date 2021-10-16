@@ -323,7 +323,9 @@ export class avaxTreezNftMarket extends ethereum.SmartContract {
       result[3].toAddress(),
       result[4].toBigInt(),
       result[5].toBoolean(),
-      result[6].toTuple() as avaxTreezNftMarket__itemsForSaleResultWinningBidStruct,
+      changetype<avaxTreezNftMarket__itemsForSaleResultWinningBidStruct>(
+        result[6].toTuple()
+      ),
       result[7].toBoolean(),
       result[8].toAddress()
     );
@@ -349,7 +351,9 @@ export class avaxTreezNftMarket extends ethereum.SmartContract {
         value[3].toAddress(),
         value[4].toBigInt(),
         value[5].toBoolean(),
-        value[6].toTuple() as avaxTreezNftMarket__itemsForSaleResultWinningBidStruct,
+        changetype<avaxTreezNftMarket__itemsForSaleResultWinningBidStruct>(
+          value[6].toTuple()
+        ),
         value[7].toBoolean(),
         value[8].toAddress()
       )
